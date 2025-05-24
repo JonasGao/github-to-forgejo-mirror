@@ -101,14 +101,32 @@ class GitHubForgejoMirror {  constructor() {
     ];
 
     return repoPatterns.some((pattern) => pattern.test(pathname));
-  }
-
-  async getConfig() {
+  }  async getConfig() {
     return new Promise((resolve) => {
       chrome.storage.sync.get(
-        ["forgejoUrl", "forgejoToken", "forgejoUser", "githubToken"],
+        [
+          "forgejoUrl",
+          "forgejoToken", 
+          "forgejoUser",
+          "githubToken",
+          "enableMirror",
+          "enableWiki",
+          "enableLabels",
+          "enableIssues",
+          "enablePullRequests", 
+          "enableReleases",
+          "private"
+        ],
         (data) => {
           if (data.forgejoUrl && data.forgejoToken && data.forgejoUser) {
+            // Set default values for migration options
+            data.enableMirror = data.enableMirror !== false;
+            data.enableWiki = data.enableWiki !== false;
+            data.enableLabels = data.enableLabels !== false;
+            data.enableIssues = data.enableIssues !== false;
+            data.enablePullRequests = data.enablePullRequests !== false;
+            data.enableReleases = data.enableReleases !== false;
+            data.private = data.private !== false;
             resolve(data);
           } else {
             resolve(null);
@@ -154,12 +172,7 @@ class GitHubForgejoMirror {  constructor() {
       const response = await this.createForgejoMirror(githubUrl, repo);
 
       if (response.ok) {
-        const data = await response.json();
         this.showNotification("success", "Repository mirrored successfully!");
-        window.open(
-          `${this.config.forgejoUrl}/${this.config.forgejoUser}/${repo}`,
-          "_blank"
-        );
       } else {
         const error = await response.json();
         throw new Error(error.message || "Failed to create mirror");
@@ -175,18 +188,17 @@ class GitHubForgejoMirror {  constructor() {
     const headers = {
       "Content-Type": "application/json",
       Authorization: `token ${this.config.forgejoToken}`,
-    };
-    const body = {
+    };    const body = {
       clone_addr: githubUrl,
-      mirror: this.config.enableMirror !== false, // 默认为 true
+      mirror: this.config.enableMirror !== false,
       repo_name: repoName,
       service: "github",
-      wiki: true,
-      labels: true,
-      issues: true,
-      pull_requests: true,
-      releases: true,
-      private: true,
+      wiki: this.config.enableWiki !== false,
+      labels: this.config.enableLabels !== false,
+      issues: !!this.config.enableIssues,
+      pull_requests: !!this.config.enablePullRequests,
+      releases: !!this.config.enableReleases,
+      private: this.config.private !== false,
     };
 
     if (this.config.githubToken) {

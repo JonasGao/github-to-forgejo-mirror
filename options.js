@@ -1,29 +1,60 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('settings-form');
   const successMessage = document.getElementById('success-message');
-  const testButton = document.getElementById('test-connection');  // Load saved settings
-  chrome.storage.sync.get(['forgejoUrl', 'forgejoToken', 'forgejoUser', 'githubToken', 'enableMirror'], (data) => {
-    if (data.forgejoUrl) document.getElementById('forgejoUrl').value = data.forgejoUrl;
-    if (data.forgejoToken) document.getElementById('forgejoToken').value = data.forgejoToken;
-    if (data.forgejoUser) document.getElementById('forgejoUser').value = data.forgejoUser;
-    if (data.githubToken) document.getElementById('githubToken').value = data.githubToken;
-    document.getElementById('enableMirror').checked = data.enableMirror !== false; // 默认为 true
-  });
+  const testButton = document.getElementById('test-connection');
+
+  // Load saved settings
+  chrome.storage.sync.get(
+    [
+      'forgejoUrl', 'forgejoToken', 'forgejoUser', 'githubToken',
+      'enableMirror', 'enableWiki', 'enableLabels', 'enableIssues',
+      'enablePullRequests', 'enableReleases', 'private'
+    ],
+    (data) => {
+      if (data.forgejoUrl) document.getElementById('forgejoUrl').value = data.forgejoUrl;
+      if (data.forgejoToken) document.getElementById('forgejoToken').value = data.forgejoToken;
+      if (data.forgejoUser) document.getElementById('forgejoUser').value = data.forgejoUser;
+      if (data.githubToken) document.getElementById('githubToken').value = data.githubToken;
+      
+      // 设置复选框状态，部分选项默认开启
+      document.getElementById('enableMirror').checked = data.enableMirror !== false;
+      document.getElementById('enableWiki').checked = data.enableWiki !== false;
+      document.getElementById('enableLabels').checked = data.enableLabels !== false;
+      document.getElementById('enableIssues').checked = !!data.enableIssues;
+      document.getElementById('enablePullRequests').checked = !!data.enablePullRequests;
+      document.getElementById('enableReleases').checked = !!data.enableReleases;
+      document.getElementById('private').checked = data.private !== false;
+    }
+  );
 
   // Save settings
   form.addEventListener('submit', async (e) => {
-    e.preventDefault();    const forgejoUrl = document.getElementById('forgejoUrl').value.replace(/\/$/, '');
+    e.preventDefault();
+    
+    const forgejoUrl = document.getElementById('forgejoUrl').value.replace(/\/$/, '');
     const forgejoToken = document.getElementById('forgejoToken').value;
     const forgejoUser = document.getElementById('forgejoUser').value;
     const githubToken = document.getElementById('githubToken').value;
     const enableMirror = document.getElementById('enableMirror').checked;
+    const enableWiki = document.getElementById('enableWiki').checked;
+    const enableLabels = document.getElementById('enableLabels').checked;
+    const enableIssues = document.getElementById('enableIssues').checked;
+    const enablePullRequests = document.getElementById('enablePullRequests').checked;
+    const enableReleases = document.getElementById('enableReleases').checked;
+    const isPrivate = document.getElementById('private').checked;
 
     await chrome.storage.sync.set({
       forgejoUrl,
       forgejoToken,
       forgejoUser,
       githubToken,
-      enableMirror
+      enableMirror,
+      enableWiki,
+      enableLabels,
+      enableIssues,
+      enablePullRequests,
+      enableReleases,
+      private: isPrivate
     });
 
     successMessage.style.display = 'block';

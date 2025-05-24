@@ -19,10 +19,15 @@
         border-radius: 6px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
       }
-      h1 {
+      h1,
+      h3 {
         margin-top: 0;
         font-size: 24px;
         font-weight: 600;
+      }
+      h3 {
+        font-size: 18px;
+        margin-bottom: 16px;
       }
       .form-group {
         margin-bottom: 20px;
@@ -31,7 +36,8 @@
         display: block;
         margin-bottom: 8px;
         font-weight: 500;
-      }      input {
+      }
+      input {
         width: 100%;
         padding: 8px 12px;
         border: 1px solid #d1d5da;
@@ -72,17 +78,44 @@
       .test-connection {
         background-color: #0366d6;
         margin-left: 8px;
-      }      .test-connection:hover {
+      }
+      .test-connection:hover {
         background-color: #035fc7;
       }
+      .checkbox-group {
+        border: 1px solid #d1d5da;
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 20px;
+        background: #f6f8fa;
+      }
       .checkbox-label {
-        display: flex;
-        flex-direction: column;
+        display: block;
+        margin-bottom: 16px;
         cursor: pointer;
+        display: flex;
+        align-items: flex-start;
+      }
+      .checkbox-label:last-child {
+        margin-bottom: 0;
       }
       .checkbox-label input[type="checkbox"] {
         width: auto;
-        margin-bottom: 8px;
+        margin-right: 8px;
+        margin-top: 3px;
+      }
+      .checkbox-text {
+        flex: 1;
+      }
+      .checkbox-description {
+        display: block;
+        font-size: 12px;
+        color: #586069;
+        font-weight: normal;
+        margin-top: 2px;
+      }
+      .checkbox-label .helper-text {
+        margin-left: 24px;
       }
     </style>
   </head>
@@ -114,20 +147,54 @@
             GitHub token with 'repo' scope for private repositories
           </div>
         </div>
-        <div class="form-group">          <label for="forgejoUser">Username</label>
+        <div class="form-group">
+          <label for="forgejoUser">Username</label>
           <input type="text" id="forgejoUser" required />
           <div class="helper-text">
             Your Forgejo username where repositories will be created
           </div>
         </div>
         <div class="form-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="enableMirror" checked />
-            Enable Mirror Mode
-            <div class="helper-text">
-              When enabled, repositories will be created as mirrors and stay synchronized with GitHub
-            </div>
-          </label>
+          <h3>Migration Options</h3>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableMirror" checked />
+              Enable Mirror Mode
+              <div class="helper-text"
+                >Keep the repository synchronized with GitHub</div
+              >
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableWiki" checked />
+              Include Wiki
+              <div class="helper-text">Mirror the wiki if it exists</div>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableLabels" checked />
+              Include Labels
+              <div class="helper-text">Copy all labels to the mirror</div>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableIssues" />
+              Include Issues
+              <div class="helper-text">Copy all issues to the mirror</div>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="enablePullRequests" />
+              Include Pull Requests
+              <div class="helper-text">Copy all pull requests to the mirror</div>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableReleases" />
+              Include Releases
+              <div class="helper-text">Copy all releases to the mirror</div>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="private" checked />
+              Private Repository
+              <div class="helper-text">Create as private repository</div>
+            </label>
+          </div>
         </div>
         <div>
           <button type="submit">Save Settings</button>
