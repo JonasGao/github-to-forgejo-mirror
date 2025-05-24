@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Forgejo Mirror Settings</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f6f8fa;
+      color: #24292e;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 24px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5da;
+      border-radius: 6px;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #0366d6;
+      box-shadow: 0 0 0 3px rgba(3,102,214,0.3);
+    }
+    .helper-text {
+      margin-top: 4px;
+      color: #586069;
+      font-size: 12px;
+    }
+    button {
+      background-color: #2ea44f;
+      color: white;
+      border: 1px solid rgba(27,31,36,0.15);
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2c974b;
+    }
+    .success-message {
+      display: none;
+      color: #2ea44f;
+      margin-top: 16px;
+      text-align: center;
+    }
+    .test-connection {
+      background-color: #0366d6;
+      margin-left: 8px;
+    }
+    .test-connection:hover {
+      background-color: #035fc7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Forgejo Mirror Settings</h1>
+    <form id="settings-form">
+      <div class="form-group">
+        <label for="forgejoUrl">Forgejo Server URL</label>
+        <input type="url" id="forgejoUrl" required placeholder="https://forgejo.example.com">
+        <div class="helper-text">The base URL of your Forgejo instance</div>
+      </div>
+      <div class="form-group">
+        <label for="forgejoToken">API Token</label>
+        <input type="password" id="forgejoToken" required>
+        <div class="helper-text">Create a token with 'repo' permissions in your Forgejo settings</div>
+      </div>
+      <div class="form-group">
+        <label for="forgejoUser">Username</label>
+        <input type="text" id="forgejoUser" required>
+        <div class="helper-text">Your Forgejo username where mirrors will be created</div>
+      </div>
+      <div>
+        <button type="submit">Save Settings</button>
+        <button type="button" class="test-connection" id="test-connection">Test Connection</button>
+      </div>
+    </form>
+    <div id="success-message" class="success-message">Settings saved successfully!</div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

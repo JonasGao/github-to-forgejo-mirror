@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .logo {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 16px;
+      color: #24292e;
+    }
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      background: #f6f8fa;
+      margin-bottom: 16px;
+    }
+    .settings-link {
+      color: #0366d6;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .settings-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon48.png" alt="Logo" class="logo">
+    <h1>GitHub to Forgejo Mirror</h1>
+  </div>
+  <div class="status" id="status">
+    Checking connection...
+  </div>
+  <a href="#" id="settings-link" class="settings-link">Open Settings</a>
+  <script src="popup.js"></script>
+</body>
+</html>
