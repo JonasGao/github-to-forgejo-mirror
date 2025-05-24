@@ -1,27 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('settings-form');
   const successMessage = document.getElementById('success-message');
-  const testButton = document.getElementById('test-connection');
-
-  // Load saved settings
-  chrome.storage.sync.get(['forgejoUrl', 'forgejoToken', 'forgejoUser'], (data) => {
+  const testButton = document.getElementById('test-connection');  // Load saved settings
+  chrome.storage.sync.get(['forgejoUrl', 'forgejoToken', 'forgejoUser', 'githubToken', 'enableMirror'], (data) => {
     if (data.forgejoUrl) document.getElementById('forgejoUrl').value = data.forgejoUrl;
     if (data.forgejoToken) document.getElementById('forgejoToken').value = data.forgejoToken;
     if (data.forgejoUser) document.getElementById('forgejoUser').value = data.forgejoUser;
+    if (data.githubToken) document.getElementById('githubToken').value = data.githubToken;
+    document.getElementById('enableMirror').checked = data.enableMirror !== false; // 默认为 true
   });
 
   // Save settings
   form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const forgejoUrl = document.getElementById('forgejoUrl').value.replace(/\/$/, '');
+    e.preventDefault();    const forgejoUrl = document.getElementById('forgejoUrl').value.replace(/\/$/, '');
     const forgejoToken = document.getElementById('forgejoToken').value;
     const forgejoUser = document.getElementById('forgejoUser').value;
+    const githubToken = document.getElementById('githubToken').value;
+    const enableMirror = document.getElementById('enableMirror').checked;
 
     await chrome.storage.sync.set({
       forgejoUrl,
       forgejoToken,
-      forgejoUser
+      forgejoUser,
+      githubToken,
+      enableMirror
     });
 
     successMessage.style.display = 'block';
