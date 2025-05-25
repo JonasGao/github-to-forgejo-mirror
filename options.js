@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "forgejoUser",
       "githubToken",
       "enableMirror",
+      "mirrorInterval",
       "enableWiki",
       "enableLabels",
       "enableIssues",
@@ -28,6 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("forgejoUser").value = data.forgejoUser;
       if (data.githubToken)
         document.getElementById("githubToken").value = data.githubToken;
+      if (typeof data.mirrorInterval === "number")
+        document.getElementById("mirrorInterval").value = data.mirrorInterval;
+      else document.getElementById("mirrorInterval").value = "8"; // 默认8小时
 
       // 设置复选框状态，部分选项默认开启
       document.getElementById("enableMirror").checked =
@@ -56,6 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const forgejoUser = document.getElementById("forgejoUser").value;
     const githubToken = document.getElementById("githubToken").value;
     const enableMirror = document.getElementById("enableMirror").checked;
+    const mirrorInterval =
+      parseInt(document.getElementById("mirrorInterval").value) || 8;
     const enableWiki = document.getElementById("enableWiki").checked;
     const enableLabels = document.getElementById("enableLabels").checked;
     const enableIssues = document.getElementById("enableIssues").checked;
@@ -71,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       forgejoUser,
       githubToken,
       enableMirror,
+      mirrorInterval,
       enableWiki,
       enableLabels,
       enableIssues,

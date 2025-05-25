@@ -156,13 +156,17 @@
         </div>
         <div class="form-group">
           <h3>Migration Options</h3>
-          <div class="checkbox-group">
-            <label class="checkbox-label">
+          <div class="checkbox-group">            <label class="checkbox-label">
               <input type="checkbox" id="enableMirror" checked />
               Enable Mirror Mode
               <div class="helper-text"
                 >Keep the repository synchronized with GitHub</div
               >
+            </label>
+            <label class="checkbox-label">
+              <input type="number" id="mirrorInterval" value="8" min="0" style="width: auto; margin-right: 4px;" />
+              Mirror Interval (hours)
+              <div class="helper-text">How often to sync with GitHub (0 for manual sync)</div>
             </label>
             <label class="checkbox-label">
               <input type="checkbox" id="enableWiki" checked />

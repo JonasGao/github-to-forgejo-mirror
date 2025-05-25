@@ -130,6 +130,8 @@ class GitHubForgejoMirror {
           if (data.forgejoUrl && data.forgejoToken && data.forgejoUser) {
             // Set default values for migration options
             data.enableMirror = data.enableMirror !== false;
+            data.mirrorInterval =
+              typeof data.mirrorInterval === "number" ? data.mirrorInterval : 8;
             data.enableWiki = data.enableWiki !== false;
             data.enableLabels = data.enableLabels !== false;
             data.enableIssues = data.enableIssues !== false;
@@ -221,10 +223,10 @@ class GitHubForgejoMirror {
         throw error;
       }
     }
-
     const body = {
       clone_addr: githubUrl,
       mirror: config.enableMirror !== false,
+      mirror_interval: `${config.mirrorInterval}h`,
       repo_name: repoName,
       repo_owner: repoOwner,
       service: "github",
