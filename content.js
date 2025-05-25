@@ -1,4 +1,5 @@
-class GitHubForgejoMirror {  constructor() {
+class GitHubForgejoMirror {
+  constructor() {
     this.isInitialized = false;
     this.lastUrl = document.location.href;
     this.init();
@@ -14,7 +15,7 @@ class GitHubForgejoMirror {  constructor() {
       debounceTimer = setTimeout(() => {
         this.checkAndInit();
       }, 200);
-    };    // 监听 URL 和内容变化
+    }; // 监听 URL 和内容变化
     const observer = new MutationObserver((mutations) => {
       const shouldCheck = mutations.some((mutation) => {
         if (mutation.type === "childList") {
@@ -23,7 +24,9 @@ class GitHubForgejoMirror {  constructor() {
           if (isNavigation) {
             this.lastUrl = document.location.href;
             this.isInitialized = false; // 重置初始化状态
-            console.debug("Navigation detected, resetting initialization state");
+            console.debug(
+              "Navigation detected, resetting initialization state"
+            );
           }
           return true;
         }
@@ -56,8 +59,11 @@ class GitHubForgejoMirror {  constructor() {
     const headerActions = document.querySelector("ul.pagehead-actions");
     const existingButton = document.querySelector(".forgejo-mirror-btn");
 
-    console.debug("Checking button status...", { headerActions, existingButton });
-    
+    console.debug("Checking button status...", {
+      headerActions,
+      existingButton,
+    });
+
     // 只在没有按钮时创建新按钮
     if (headerActions && !existingButton) {
       console.info("No existing button found, initializing...");
@@ -101,21 +107,24 @@ class GitHubForgejoMirror {  constructor() {
     ];
 
     return repoPatterns.some((pattern) => pattern.test(pathname));
-  }  async getConfig() {
+  }
+
+  async getConfig() {
     return new Promise((resolve) => {
       chrome.storage.sync.get(
         [
           "forgejoUrl",
-          "forgejoToken", 
+          "forgejoToken",
           "forgejoUser",
           "githubToken",
           "enableMirror",
           "enableWiki",
           "enableLabels",
           "enableIssues",
-          "enablePullRequests", 
+          "enablePullRequests",
           "enableReleases",
-          "private"
+          "private",
+          "useOrganization",
         ],
         (data) => {
           if (data.forgejoUrl && data.forgejoToken && data.forgejoUser) {
@@ -127,6 +136,7 @@ class GitHubForgejoMirror {  constructor() {
             data.enablePullRequests = data.enablePullRequests !== false;
             data.enableReleases = data.enableReleases !== false;
             data.private = data.private !== false;
+            data.useOrganization = data.useOrganization !== false;
             resolve(data);
           } else {
             resolve(null);
@@ -182,18 +192,24 @@ class GitHubForgejoMirror {  constructor() {
       this.resetButton(btn);
     }
   }
+  
   async createForgejoMirror(githubUrl, owner, repoName) {
     const headers = {
       "Content-Type": "application/json",
       Authorization: `token ${this.config.forgejoToken}`,
     };
+    let repoOwner = this.config.forgejoUser;
 
-    // Check if it's an organization repository
-    if (owner !== this.config.forgejoUser) {
+    // Check if we should use organization structure
+    if (
+      this.config.useOrganization !== false &&
+      owner !== this.config.forgejoUser
+    ) {
       try {
         await this.ensureOrganizationExists(owner);
+        repoOwner = owner;
       } catch (error) {
-        console.error('Failed to ensure organization exists:', error);
+        console.error("Failed to ensure organization exists:", error);
         throw error;
       }
     }
@@ -202,7 +218,7 @@ class GitHubForgejoMirror {  constructor() {
       clone_addr: githubUrl,
       mirror: this.config.enableMirror !== false,
       repo_name: repoName,
-      repo_owner: owner,
+      repo_owner: repoOwner,
       service: "github",
       wiki: this.config.enableWiki !== false,
       labels: this.config.enableLabels !== false,
@@ -225,17 +241,20 @@ class GitHubForgejoMirror {  constructor() {
   async ensureOrganizationExists(orgName) {
     try {
       // Try to create the organization directly
-      const createResponse = await fetch(`${this.config.forgejoUrl}/api/v1/orgs`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `token ${this.config.forgejoToken}`
-        },
-        body: JSON.stringify({
-          username: orgName,
-          visibility: this.config.private ? 'private' : 'public'
-        })
-      });
+      const createResponse = await fetch(
+        `${this.config.forgejoUrl}/api/v1/orgs`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `token ${this.config.forgejoToken}`,
+          },
+          body: JSON.stringify({
+            username: orgName,
+            visibility: this.config.private ? "private" : "public",
+          }),
+        }
+      );
 
       if (createResponse.ok) {
         console.info(`Organization ${orgName} created successfully`);
@@ -250,7 +269,10 @@ class GitHubForgejoMirror {  constructor() {
 
       // For other error status codes, throw an error
       const error = await createResponse.json();
-      throw new Error(error.message || `Failed to create organization: ${createResponse.status}`);
+      throw new Error(
+        error.message ||
+          `Failed to create organization: ${createResponse.status}`
+      );
     } catch (error) {
       throw new Error(`Organization error: ${error.message}`);
     }
