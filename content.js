@@ -72,15 +72,15 @@ class GitHubForgejoMirror {
       console.info("Button already exists, skipping initialization.");
     }
   }
-
   async init() {
     if (this.isInitialized) {
       console.info("Forgejo mirror is already initialized.");
       return;
     }
 
-    this.config = await this.getConfig();
-    if (!this.config) {
+    // 检查是否有基本配置
+    const config = await this.getConfig();
+    if (!config) {
       console.warn(
         "Forgejo configuration not found. Please set it up in the extension options."
       );
@@ -167,7 +167,6 @@ class GitHubForgejoMirror {
     btnContainer.appendChild(btn);
     headerActions.insertBefore(btnContainer, headerActions.firstChild);
   }
-
   async handleMirrorClick() {
     const btn = document.querySelector(".forgejo-mirror-btn");
     if (!btn) return;
@@ -176,9 +175,22 @@ class GitHubForgejoMirror {
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Creating mirror...';
 
+      // 获取最新配置
+      const config = await this.getConfig();
+      if (!config) {
+        throw new Error(
+          "Configuration not found. Please set up the extension options."
+        );
+      }
+
       const [owner, repo] = window.location.pathname.slice(1).split("/");
       const githubUrl = `https://github.com/${owner}/${repo}.git`;
-      const response = await this.createForgejoMirror(githubUrl, owner, repo);
+      const response = await this.createForgejoMirror(
+        githubUrl,
+        owner,
+        repo,
+        config
+      );
 
       if (response.ok) {
         this.showNotification("success", "Repository mirrored successfully!");
@@ -192,21 +204,17 @@ class GitHubForgejoMirror {
       this.resetButton(btn);
     }
   }
-  
-  async createForgejoMirror(githubUrl, owner, repoName) {
+  async createForgejoMirror(githubUrl, owner, repoName, config) {
     const headers = {
       "Content-Type": "application/json",
-      Authorization: `token ${this.config.forgejoToken}`,
+      Authorization: `token ${config.forgejoToken}`,
     };
-    let repoOwner = this.config.forgejoUser;
+    let repoOwner = config.forgejoUser;
 
     // Check if we should use organization structure
-    if (
-      this.config.useOrganization !== false &&
-      owner !== this.config.forgejoUser
-    ) {
+    if (config.useOrganization !== false && owner !== config.forgejoUser) {
       try {
-        await this.ensureOrganizationExists(owner);
+        await this.ensureOrganizationExists(owner, config);
         repoOwner = owner;
       } catch (error) {
         console.error("Failed to ensure organization exists:", error);
@@ -216,45 +224,41 @@ class GitHubForgejoMirror {
 
     const body = {
       clone_addr: githubUrl,
-      mirror: this.config.enableMirror !== false,
+      mirror: config.enableMirror !== false,
       repo_name: repoName,
       repo_owner: repoOwner,
       service: "github",
-      wiki: this.config.enableWiki !== false,
-      labels: this.config.enableLabels !== false,
-      issues: !!this.config.enableIssues,
-      pull_requests: !!this.config.enablePullRequests,
-      releases: !!this.config.enableReleases,
-      private: this.config.private !== false,
+      wiki: config.enableWiki !== false,
+      labels: config.enableLabels !== false,
+      issues: !!config.enableIssues,
+      pull_requests: !!config.enablePullRequests,
+      releases: !!config.enableReleases,
+      private: config.private !== false,
     };
-
-    if (this.config.githubToken) {
-      body.auth_token = this.config.githubToken;
+    if (config.githubToken) {
+      body.auth_token = config.githubToken;
     }
 
-    return fetch(`${this.config.forgejoUrl}/api/v1/repos/migrate`, {
+    return fetch(`${config.forgejoUrl}/api/v1/repos/migrate`, {
       method: "POST",
       headers,
       body: JSON.stringify(body),
     });
   }
-  async ensureOrganizationExists(orgName) {
+  async ensureOrganizationExists(orgName, config) {
     try {
       // Try to create the organization directly
-      const createResponse = await fetch(
-        `${this.config.forgejoUrl}/api/v1/orgs`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `token ${this.config.forgejoToken}`,
-          },
-          body: JSON.stringify({
-            username: orgName,
-            visibility: this.config.private ? "private" : "public",
-          }),
-        }
-      );
+      const createResponse = await fetch(`${config.forgejoUrl}/api/v1/orgs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `token ${config.forgejoToken}`,
+        },
+        body: JSON.stringify({
+          username: orgName,
+          visibility: config.private ? "private" : "public",
+        }),
+      });
 
       if (createResponse.ok) {
         console.info(`Organization ${orgName} created successfully`);
