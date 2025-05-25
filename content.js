@@ -168,8 +168,7 @@ class GitHubForgejoMirror {  constructor() {
 
       const [owner, repo] = window.location.pathname.slice(1).split("/");
       const githubUrl = `https://github.com/${owner}/${repo}.git`;
-
-      const response = await this.createForgejoMirror(githubUrl, repo);
+      const response = await this.createForgejoMirror(githubUrl, owner, repo);
 
       if (response.ok) {
         this.showNotification("success", "Repository mirrored successfully!");
@@ -183,15 +182,27 @@ class GitHubForgejoMirror {  constructor() {
       this.resetButton(btn);
     }
   }
-
-  async createForgejoMirror(githubUrl, repoName) {
+  async createForgejoMirror(githubUrl, owner, repoName) {
     const headers = {
       "Content-Type": "application/json",
       Authorization: `token ${this.config.forgejoToken}`,
-    };    const body = {
+    };
+
+    // Check if it's an organization repository
+    if (owner !== this.config.forgejoUser) {
+      try {
+        await this.ensureOrganizationExists(owner);
+      } catch (error) {
+        console.error('Failed to ensure organization exists:', error);
+        throw error;
+      }
+    }
+
+    const body = {
       clone_addr: githubUrl,
       mirror: this.config.enableMirror !== false,
       repo_name: repoName,
+      repo_owner: owner,
       service: "github",
       wiki: this.config.enableWiki !== false,
       labels: this.config.enableLabels !== false,
@@ -210,6 +221,39 @@ class GitHubForgejoMirror {  constructor() {
       headers,
       body: JSON.stringify(body),
     });
+  }
+  async ensureOrganizationExists(orgName) {
+    try {
+      // Try to create the organization directly
+      const createResponse = await fetch(`${this.config.forgejoUrl}/api/v1/orgs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `token ${this.config.forgejoToken}`
+        },
+        body: JSON.stringify({
+          username: orgName,
+          visibility: this.config.private ? 'private' : 'public'
+        })
+      });
+
+      if (createResponse.ok) {
+        console.info(`Organization ${orgName} created successfully`);
+        return true;
+      }
+
+      // If creation fails with 422, it likely means the org already exists
+      if (createResponse.status === 422) {
+        console.info(`Organization ${orgName} already exists`);
+        return true;
+      }
+
+      // For other error status codes, throw an error
+      const error = await createResponse.json();
+      throw new Error(error.message || `Failed to create organization: ${createResponse.status}`);
+    } catch (error) {
+      throw new Error(`Organization error: ${error.message}`);
+    }
   }
 
   showNotification(type, message) {
