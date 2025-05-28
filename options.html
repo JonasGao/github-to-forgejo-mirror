@@ -12,23 +12,20 @@
         color: #24292e;
       }
       .container {
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
         background: white;
         padding: 24px;
         border-radius: 6px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
       }
-      h1,
-      h3 {
+      h1, h2, h3 {
         margin-top: 0;
-        font-size: 24px;
         font-weight: 600;
       }
-      h3 {
-        font-size: 18px;
-        margin-bottom: 16px;
-      }
+      h1 { font-size: 24px; }
+      h2 { font-size: 20px; margin: 24px 0 16px; }
+      h3 { font-size: 18px; margin-bottom: 16px; }
       .form-group {
         margin-bottom: 20px;
       }
@@ -68,6 +65,10 @@
       }
       button:hover {
         background-color: #2c974b;
+      }
+      button:disabled {
+        background-color: #94d3a2;
+        cursor: not-allowed;
       }
       .success-message {
         display: none;
@@ -117,104 +118,155 @@
       .checkbox-label .helper-text {
         margin-left: 24px;
       }
+      .config-group {
+        border: 1px solid #d1d5da;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .config-group-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .config-group-name {
+        font-weight: 600;
+        font-size: 16px;
+        margin: 0;
+      }
+      .delete-group {
+        background-color: #d73a49;
+        padding: 4px 12px;
+      }
+      .delete-group:hover {
+        background-color: #cb2431;
+      }
+      .add-group {
+        margin-bottom: 20px;
+      }
+      .switch-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .switch-label {
+        margin-right: 8px;
+        font-weight: 500;
+      }
+      .switch {
+        width: auto;
+        margin-right: 8px;
+      }
+      .config-name-input {
+        width: 200px;
+        margin-right: 8px;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>Forgejo Mirror Settings</h1>
-      <form id="settings-form">
-        <div class="form-group">
-          <label for="forgejoUrl">Forgejo Server URL</label>
-          <input
-            type="url"
-            id="forgejoUrl"
-            required
-            placeholder="https://forgejo.example.com"
-          />
-          <div class="helper-text">The base URL of your Forgejo instance</div>
-        </div>
-        <div class="form-group">
-          <label for="forgejoToken">Forgejo API Token</label>
-          <input type="password" id="forgejoToken" required />
-          <div class="helper-text">
-            Create a token with 'repo' permissions in your Forgejo settings
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="githubToken">GitHub API Token (Optional)</label>
-          <input type="password" id="githubToken" />
-          <div class="helper-text">
-            GitHub token with 'repo' scope for private repositories
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="forgejoUser">Username</label>
-          <input type="text" id="forgejoUser" required />
-          <div class="helper-text">
-            Your Forgejo username where repositories will be created
-          </div>
-        </div>
-        <div class="form-group">
-          <h3>Migration Options</h3>
-          <div class="checkbox-group">            <label class="checkbox-label">
-              <input type="checkbox" id="enableMirror" checked />
-              Enable Mirror Mode
-              <div class="helper-text"
-                >Keep the repository synchronized with GitHub</div
-              >
-            </label>
-            <label class="checkbox-label">
-              <input type="number" id="mirrorInterval" value="8" min="0" style="width: auto; margin-right: 4px;" />
-              Mirror Interval (hours)
-              <div class="helper-text">How often to sync with GitHub (0 for manual sync)</div>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="enableWiki" checked />
-              Include Wiki
-              <div class="helper-text">Mirror the wiki if it exists</div>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="enableLabels" checked />
-              Include Labels
-              <div class="helper-text">Copy all labels to the mirror</div>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="enableIssues" />
-              Include Issues
-              <div class="helper-text">Copy all issues to the mirror</div>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="enablePullRequests" />
-              Include Pull Requests
-              <div class="helper-text">Copy all pull requests to the mirror</div>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="enableReleases" />
-              Include Releases
-              <div class="helper-text">Copy all releases to the mirror</div>
-            </label>            <label class="checkbox-label">
-              <input type="checkbox" id="private" checked />
-              Private Repository
-              <div class="helper-text">Create as private repository</div>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="useOrganization" checked />
-              Use Same Organization Structure
-              <div class="helper-text">Create and use the same organization structure as GitHub</div>
-            </label>
-          </div>
-        </div>
-        <div>
-          <button type="submit">Save Settings</button>
-          <button type="button" class="test-connection" id="test-connection">
-            Test Connection
-          </button>
-        </div>
-      </form>
-      <div id="success-message" class="success-message">
-        Settings saved successfully!
+      <div id="config-groups"></div>
+      <div>
+        <input type="text" id="new-config-name" class="config-name-input" placeholder="New configuration name" />
+        <button type="button" class="add-group" id="add-group">Add New Configuration</button>
       </div>
     </div>
+
+    <!-- Configuration Group Template -->
+    <template id="config-group-template">
+      <div class="config-group">
+        <div class="config-group-header">
+          <h2 class="config-group-name"></h2>
+          <div>
+            <button type="button" class="test-connection">Test Connection</button>
+            <button type="button" class="delete-group">Delete</button>
+          </div>
+        </div>
+        <div class="switch-container">
+          <label class="switch-label">Active:</label>
+          <input type="checkbox" class="switch is-active" />
+        </div>
+        <form class="settings-form">
+          <div class="form-group">
+            <label for="forgejoUrl">Forgejo Server URL</label>
+            <input type="url" class="forgejo-url" required placeholder="https://forgejo.example.com" />
+            <div class="helper-text">The base URL of your Forgejo instance</div>
+          </div>
+          <div class="form-group">
+            <label for="forgejoToken">Forgejo API Token</label>
+            <input type="password" class="forgejo-token" required />
+            <div class="helper-text">Create a token with 'repo' permissions in your Forgejo settings</div>
+          </div>
+          <div class="form-group">
+            <label for="githubToken">GitHub API Token (Optional)</label>
+            <input type="password" class="github-token" />
+            <div class="helper-text">GitHub token with 'repo' scope for private repositories</div>
+          </div>
+          <div class="form-group">
+            <label for="forgejoUser">Username</label>
+            <input type="text" class="forgejo-user" required />
+            <div class="helper-text">Your Forgejo username where repositories will be created</div>
+          </div>
+          <div class="form-group">
+            <h3>Migration Options</h3>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" class="enable-mirror" checked />
+                Enable Mirror Mode
+                <div class="helper-text">Keep the repository synchronized with GitHub</div>
+              </label>
+              <label class="checkbox-label">
+                <input type="number" class="mirror-interval" value="8" min="0" style="width: auto; margin-right: 4px;" />
+                Mirror Interval (hours)
+                <div class="helper-text">How often to sync with GitHub (0 for manual sync)</div>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="enable-wiki" checked />
+                Include Wiki
+                <div class="helper-text">Mirror the wiki if it exists</div>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="enable-labels" checked />
+                Include Labels
+                <div class="helper-text">Copy all labels to the mirror</div>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="enable-issues" />
+                Include Issues
+                <div class="helper-text">Copy all issues to the mirror</div>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="enable-pull-requests" />
+                Include Pull Requests
+                <div class="helper-text">Copy all pull requests to the mirror</div>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="enable-releases" />
+                Include Releases
+                <div class="helper-text">Copy all releases to the mirror</div>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="private" checked />
+                Private Repository
+                <div class="helper-text">Create as private repository</div>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="use-organization" checked />
+                Use Same Organization Structure
+                <div class="helper-text">Create and use the same organization structure as GitHub</div>
+              </label>
+            </div>
+          </div>
+          <div>
+            <button type="submit">Save Settings</button>
+          </div>
+        </form>
+        <div class="success-message">Settings saved successfully!</div>
+      </div>
+    </template>
     <script src="options.js"></script>
   </body>
 </html>

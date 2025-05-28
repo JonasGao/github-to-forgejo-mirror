@@ -37,12 +37,35 @@
     .settings-link:hover {
       text-decoration: underline;
     }
+    .config-selector {
+      margin-bottom: 16px;
+      padding: 12px;
+      border-radius: 6px;
+      background: #f6f8fa;
+    }
+    .config-selector select {
+      width: 100%;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #d1d5da;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .config-selector label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #24292e;
+    }
   </style>
 </head>
 <body>
   <div class="header">
     <img src="icons/icon48.png" alt="Logo" class="logo">
     <h1>GitHub to Forgejo Mirror</h1>
+  </div>
+  <div class="config-selector">
+    <label for="config-select">Active Configuration:</label>
+    <select id="config-select"></select>
   </div>
   <div class="status" id="status">
     Checking connection...

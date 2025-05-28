@@ -50,6 +50,7 @@ class GitHubForgejoMirror {
     // 初始检查
     debouncedCheck();
   }
+
   async checkAndInit() {
     if (!this.isRepoPage()) {
       console.info("Not a repository page, skipping initialization.");
@@ -72,6 +73,7 @@ class GitHubForgejoMirror {
       console.info("Button already exists, skipping initialization.");
     }
   }
+
   async init() {
     if (this.isInitialized) {
       console.info("Forgejo mirror is already initialized.");
@@ -111,40 +113,30 @@ class GitHubForgejoMirror {
 
   async getConfig() {
     return new Promise((resolve) => {
-      chrome.storage.sync.get(
-        [
-          "forgejoUrl",
-          "forgejoToken",
-          "forgejoUser",
-          "githubToken",
-          "enableMirror",
-          "enableWiki",
-          "enableLabels",
-          "enableIssues",
-          "enablePullRequests",
-          "enableReleases",
-          "private",
-          "useOrganization",
-        ],
-        (data) => {
-          if (data.forgejoUrl && data.forgejoToken && data.forgejoUser) {
-            // Set default values for migration options
-            data.enableMirror = data.enableMirror !== false;
-            data.mirrorInterval =
-              typeof data.mirrorInterval === "number" ? data.mirrorInterval : 8;
-            data.enableWiki = data.enableWiki !== false;
-            data.enableLabels = data.enableLabels !== false;
-            data.enableIssues = data.enableIssues !== false;
-            data.enablePullRequests = data.enablePullRequests !== false;
-            data.enableReleases = data.enableReleases !== false;
-            data.private = data.private !== false;
-            data.useOrganization = data.useOrganization !== false;
-            resolve(data);
-          } else {
-            resolve(null);
-          }
+      chrome.storage.sync.get(["configurations", "activeConfig"], (data) => {
+        const { configurations = {}, activeConfig } = data;
+        if (!activeConfig || !configurations[activeConfig]) {
+          resolve(null);
+          return;
         }
-      );
+
+        const config = configurations[activeConfig];
+        if (config.forgejoUrl && config.forgejoToken && config.forgejoUser) {
+          // Set default values for migration options
+          config.enableMirror = config.enableMirror !== false;
+          config.mirrorInterval = typeof config.mirrorInterval === "number" ? config.mirrorInterval : 8;
+          config.enableWiki = config.enableWiki !== false;
+          config.enableLabels = config.enableLabels !== false;
+          config.enableIssues = !!config.enableIssues;
+          config.enablePullRequests = !!config.enablePullRequests;
+          config.enableReleases = !!config.enableReleases;
+          config.private = config.private !== false;
+          config.useOrganization = config.useOrganization !== false;
+          resolve(config);
+        } else {
+          resolve(null);
+        }
+      });
     });
   }
 
@@ -169,6 +161,7 @@ class GitHubForgejoMirror {
     btnContainer.appendChild(btn);
     headerActions.insertBefore(btnContainer, headerActions.firstChild);
   }
+
   async handleMirrorClick() {
     const btn = document.querySelector(".forgejo-mirror-btn");
     if (!btn) return;
@@ -206,6 +199,7 @@ class GitHubForgejoMirror {
       this.resetButton(btn);
     }
   }
+
   async createForgejoMirror(githubUrl, owner, repoName, config) {
     const headers = {
       "Content-Type": "application/json",
@@ -223,6 +217,7 @@ class GitHubForgejoMirror {
         throw error;
       }
     }
+
     const body = {
       clone_addr: githubUrl,
       mirror: config.enableMirror !== false,
@@ -247,6 +242,7 @@ class GitHubForgejoMirror {
       body: JSON.stringify(body),
     });
   }
+
   async ensureOrganizationExists(orgName, config) {
     try {
       // Try to create the organization directly
