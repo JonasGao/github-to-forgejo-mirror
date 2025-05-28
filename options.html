@@ -57,7 +57,7 @@
         background-color: #2ea44f;
         color: white;
         border: 1px solid rgba(27, 31, 36, 0.15);
-        padding: 8px 16px;
+        padding: 9px 16px;
         font-size: 14px;
         font-weight: 500;
         border-radius: 6px;
@@ -95,7 +95,7 @@
         margin-bottom: 16px;
         cursor: pointer;
         display: flex;
-        align-items: flex-start;
+        align-items: baseline;
       }
       .checkbox-label:last-child {
         margin-bottom: 0;
@@ -138,7 +138,6 @@
       }
       .delete-group {
         background-color: #d73a49;
-        padding: 4px 12px;
       }
       .delete-group:hover {
         background-color: #cb2431;
@@ -158,6 +157,7 @@
       .switch {
         width: auto;
         margin-right: 8px;
+        margin-bottom: 8px;
       }
       .config-name-input {
         width: 200px;
@@ -218,11 +218,13 @@
                 Enable Mirror Mode
                 <div class="helper-text">Keep the repository synchronized with GitHub</div>
               </label>
-              <label class="checkbox-label">
-                <input type="number" class="mirror-interval" value="8" min="0" style="width: auto; margin-right: 4px;" />
-                Mirror Interval (hours)
-                <div class="helper-text">How often to sync with GitHub (0 for manual sync)</div>
-              </label>
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px;">Mirror Interval (hours)</label>
+                <div style="display: flex; align-items: center;">
+                  <input type="number" class="mirror-interval" value="8" min="0" style="width: 80px; margin: 0;" />
+                  <div class="helper-text" style="margin: 0 0 0 12px;">How often to sync with GitHub (0 for manual sync)</div>
+                </div>
+              </div>
               <label class="checkbox-label">
                 <input type="checkbox" class="enable-wiki" checked />
                 Include Wiki
