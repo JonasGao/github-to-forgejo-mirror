@@ -163,6 +163,29 @@
         width: 200px;
         margin-right: 8px;
       }
+      .config-name-edit {
+        border: 1px solid transparent;
+        border-radius: 6px;
+        padding: 4px 8px;
+        background: transparent;
+      }
+      .config-name-edit:not([readonly]):focus {
+        border-color: #0366d6;
+        background: white;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+      }
+      .config-name-edit[readonly] {
+        cursor: default;
+      }
+      .rename-config {
+        padding: 4px 8px;
+        font-size: 12px;
+        background-color: #0366d6;
+      }
+      .rename-config:hover {
+        background-color: #035fc7;
+      }
     </style>
   </head>
   <body>
@@ -179,7 +202,10 @@
     <template id="config-group-template">
       <div class="config-group">
         <div class="config-group-header">
-          <h2 class="config-group-name"></h2>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="text" class="config-name-edit" style="width: 200px; font-size: 16px; font-weight: 600;" />
+            <button type="button" class="rename-config" style="padding: 4px 8px;">Rename</button>
+          </div>
           <div>
             <button type="button" class="test-connection">Test Connection</button>
             <button type="button" class="delete-group">Delete</button>

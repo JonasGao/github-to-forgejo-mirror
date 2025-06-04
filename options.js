@@ -13,8 +13,60 @@ document.addEventListener("DOMContentLoaded", async () => {
     const configGroup = configElement.querySelector(".config-group");
     configGroup.dataset.name = name;
 
-    // Set group name
-    configGroup.querySelector(".config-group-name").textContent = name;
+    // Set group name and handle rename
+    const nameInput = configGroup.querySelector(".config-name-edit");
+    nameInput.value = name;
+    nameInput.readOnly = true;
+
+    const renameButton = configGroup.querySelector(".rename-config");
+    renameButton.addEventListener("click", async () => {
+      if (nameInput.readOnly) {
+        // Enter edit mode
+        nameInput.readOnly = false;
+        nameInput.focus();
+        nameInput.select();
+        renameButton.textContent = "Save";
+      } else {
+        // Save new name
+        const newName = nameInput.value.trim();
+        const oldName = configGroup.dataset.name;
+        
+        if (!newName) {
+          alert("Configuration name cannot be empty");
+          nameInput.value = oldName;
+          return;
+        }
+
+        if (newName === oldName) {
+          nameInput.readOnly = true;
+          renameButton.textContent = "Rename";
+          return;
+        }
+
+        const { configurations, activeConfig } = await chrome.storage.sync.get(["configurations", "activeConfig"]);
+        if (configurations[newName]) {
+          alert("A configuration with this name already exists");
+          nameInput.value = oldName;
+          return;
+        }
+
+        // Update configuration storage
+        configurations[newName] = configurations[oldName];
+        delete configurations[oldName];
+
+        // Update active config if needed
+        if (activeConfig === oldName) {
+          await chrome.storage.sync.set({ activeConfig: newName });
+        }
+
+        await chrome.storage.sync.set({ configurations });
+
+        // Update DOM
+        configGroup.dataset.name = newName;
+        nameInput.readOnly = true;
+        renameButton.textContent = "Rename";
+      }
+    });
 
     // Set active state
     const isActiveSwitch = configGroup.querySelector(".is-active");
