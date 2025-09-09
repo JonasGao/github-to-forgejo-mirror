@@ -16,8 +16,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Collapse/Expand support
     const collapseBtn = configGroup.querySelector(".collapse-btn");
     const groupBody = configGroup.querySelector(".config-group-body");
-    // Initialize collapsed state (default: true)
-    const initialCollapsed = config ? (config.collapsed !== false) : true;
+    // Initialize collapsed state
+    // Default behavior:
+    // - If config.collapsed is explicitly stored, use it (true => collapsed; false => expanded)
+    // - Otherwise, auto-expand if the config is active; collapse others by default
+    let initialCollapsed = true;
+    if (config) {
+      if (Object.prototype.hasOwnProperty.call(config, "collapsed")) {
+        initialCollapsed = config.collapsed !== false;
+      } else {
+        initialCollapsed = !config.isActive;
+      }
+    }
     if (initialCollapsed) {
       configGroup.classList.add("collapsed");
       if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "false");

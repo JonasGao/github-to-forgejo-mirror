@@ -8,7 +8,7 @@
         font-family: system-ui, -apple-system, sans-serif;
         margin: 0;
         padding: 20px;
-        background: #f6f8fa;
+        background: linear-gradient(180deg, #f6f8fa 0%, #ffffff 100%);
         color: #24292e;
       }
       .container {
@@ -16,8 +16,8 @@
         margin: 0 auto;
         background: white;
         padding: 24px;
-        border-radius: 6px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
       }
       h1, h2, h3 {
         margin-top: 0;
@@ -62,13 +62,18 @@
         font-weight: 500;
         border-radius: 6px;
         cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
       }
       button:hover {
         background-color: #2c974b;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(46, 164, 79, 0.2);
       }
       button:disabled {
         background-color: #94d3a2;
         cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
       .success-message {
         display: none;
@@ -120,10 +125,17 @@
       }
       .config-group {
         border: 1px solid #d1d5da;
-        border-radius: 6px;
+        border-radius: 10px;
         padding: 20px;
         margin-bottom: 20px;
         position: relative;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+      }
+      .config-group:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        transform: translateY(-2px);
       }
       .config-group-header {
         display: flex;
@@ -131,14 +143,27 @@
         align-items: center;
         margin-bottom: 20px;
       }
+      /* Smooth collapse animation */
+      .config-group-body {
+        max-height: 1000px;
+        overflow: hidden;
+        transition: max-height 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
+        opacity: 1;
+        transform: translateY(0);
+      }
       .config-group.collapsed .config-group-body {
-        display: none;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-4px);
       }
       .collapse-btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
-        padding: 4px 8px;
+        width: 28px;
+        height: 28px;
+        padding: 0;
         font-size: 12px;
         background-color: #f6f8fa;
         color: #24292e;
@@ -149,6 +174,11 @@
       .collapse-btn:hover {
         background-color: #eef1f4;
       }
+      .collapse-btn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+        border-color: #0366d6;
+      }
       .caret {
         display: inline-block;
         width: 0;
@@ -157,6 +187,7 @@
         border-right: 5px solid transparent;
         border-top: 6px solid currentColor;
         transition: transform 0.2s ease;
+        margin-top: 2px;
       }
       .config-group.collapsed .caret {
         transform: rotate(-90deg);
@@ -220,11 +251,11 @@
   </head>
   <body>
     <div class="container">
-      <h1>Forgejo Mirror Settings</h1>
+      <h1>🛠️ Forgejo Mirror Settings</h1>
       <div id="config-groups"></div>
       <div>
         <input type="text" id="new-config-name" class="config-name-input" placeholder="New configuration name" />
-        <button type="button" class="add-group" id="add-group">Add New Configuration</button>
+        <button type="button" class="add-group" id="add-group">➕ Add New Configuration</button>
       </div>
     </div>
 
@@ -233,21 +264,20 @@
       <div class="config-group">
         <div class="config-group-header">
           <div style="display: flex; align-items: center; gap: 8px;">
-            <button type="button" class="collapse-btn" aria-expanded="true" title="Collapse / Expand">
+            <button type="button" class="collapse-btn" aria-expanded="true" aria-label="Collapse or expand" title="Collapse or expand">
               <span class="caret" aria-hidden="true"></span>
-              Section
             </button>
             <input type="text" class="config-name-edit" style="width: 200px; font-size: 16px; font-weight: 600;" />
-            <button type="button" class="rename-config" style="padding: 4px 8px;">Rename</button>
+            <button type="button" class="rename-config" style="padding: 4px 8px;">✏️ Rename</button>
           </div>
           <div>
-            <button type="button" class="test-connection">Test Connection</button>
-            <button type="button" class="delete-group">Delete</button>
+            <button type="button" class="test-connection">🔌 Test Connection</button>
+            <button type="button" class="delete-group">🗑️ Delete</button>
           </div>
         </div>
         <div class="config-group-body">
           <div class="switch-container">
-            <label class="switch-label">Active:</label>
+            <label class="switch-label">⭐ Active:</label>
             <input type="checkbox" class="switch is-active" />
           </div>
           <form class="settings-form">
