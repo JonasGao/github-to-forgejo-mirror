@@ -13,6 +13,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     const configGroup = configElement.querySelector(".config-group");
     configGroup.dataset.name = name;
 
+    // Collapse/Expand support
+    const collapseBtn = configGroup.querySelector(".collapse-btn");
+    const groupBody = configGroup.querySelector(".config-group-body");
+    // Initialize collapsed state
+    if (config && config.collapsed) {
+      configGroup.classList.add("collapsed");
+      if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "false");
+    } else {
+      if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "true");
+    }
+    if (collapseBtn) {
+      collapseBtn.addEventListener("click", async () => {
+        const isCollapsed = configGroup.classList.toggle("collapsed");
+        collapseBtn.setAttribute("aria-expanded", String(!isCollapsed));
+        // Persist collapsed state to storage
+        const { configurations } = await chrome.storage.sync.get("configurations");
+        if (configurations && configurations[name]) {
+          configurations[name].collapsed = isCollapsed;
+          await chrome.storage.sync.set({ configurations });
+        }
+      });
+    }
+
     // Set group name and handle rename
     const nameInput = configGroup.querySelector(".config-name-edit");
     nameInput.value = name;
@@ -130,7 +153,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         enableReleases: form.querySelector(".enable-releases").checked,
         private: form.querySelector(".private").checked,
         useOrganization: form.querySelector(".use-organization").checked,
-        isActive: configGroup.querySelector(".is-active").checked
+        isActive: configGroup.querySelector(".is-active").checked,
+        collapsed: configGroup.classList.contains("collapsed")
       };
 
       const { configurations } = await chrome.storage.sync.get("configurations");
@@ -180,7 +204,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (confirm(`Are you sure you want to delete the configuration "${name}"?`)) {
         const { configurations, activeConfig } = await chrome.storage.sync.get(["configurations", "activeConfig"]);
         delete configurations[name];
-        
+
         // If the active config is being deleted, set a new active config
         if (activeConfig === name) {
           const firstConfig = Object.keys(configurations)[0];
@@ -191,7 +215,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             await chrome.storage.sync.remove("activeConfig");
           }
         }
-        
+
         await chrome.storage.sync.set({ configurations });
         configGroup.remove();
       }
@@ -216,9 +240,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const isFirstConfig = Object.keys(configurations).length === 0;
     const newConfig = {
-      isActive: isFirstConfig
+      isActive: isFirstConfig,
+      collapsed: false
     };
-    
+
     configurations[name] = newConfig;
     await chrome.storage.sync.set({ configurations });
     if (isFirstConfig) {
