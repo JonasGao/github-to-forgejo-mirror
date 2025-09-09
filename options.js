@@ -16,8 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Collapse/Expand support
     const collapseBtn = configGroup.querySelector(".collapse-btn");
     const groupBody = configGroup.querySelector(".config-group-body");
-    // Initialize collapsed state
-    if (config && config.collapsed) {
+    // Initialize collapsed state (default: true)
+    const initialCollapsed = config ? (config.collapsed !== false) : true;
+    if (initialCollapsed) {
       configGroup.classList.add("collapsed");
       if (collapseBtn) collapseBtn.setAttribute("aria-expanded", "false");
     } else {
@@ -241,7 +242,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const isFirstConfig = Object.keys(configurations).length === 0;
     const newConfig = {
       isActive: isFirstConfig,
-      collapsed: false
+      collapsed: true
     };
 
     configurations[name] = newConfig;
@@ -280,7 +281,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const defaultName = "Default Configuration";
     const migratedConfig = {
       ...oldConfig,
-      isActive: true
+      isActive: true,
+      collapsed: true
     };
     
     configurations[defaultName] = migratedConfig;
