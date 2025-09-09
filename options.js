@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         nameInput.readOnly = false;
         nameInput.focus();
         nameInput.select();
-        renameButton.textContent = "Save";
+        renameButton.textContent = "💾 Save";
       } else {
         // Save new name
         const newName = nameInput.value.trim();
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (newName === oldName) {
           nameInput.readOnly = true;
-          renameButton.textContent = "Rename";
+          renameButton.textContent = "✏️ Rename";
           return;
         }
 
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Update DOM
         configGroup.dataset.name = newName;
         nameInput.readOnly = true;
-        renameButton.textContent = "Rename";
+        renameButton.textContent = "✏️ Rename";
       }
     });
 
