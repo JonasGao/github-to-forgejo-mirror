@@ -143,6 +143,23 @@
         align-items: center;
         margin-bottom: 20px;
       }
+      /* Unify header buttons height */
+      .config-group-header button {
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .config-group-header .collapse-btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+      }
+      .config-group-header .rename-config,
+      .config-group-header .test-connection,
+      .config-group-header .delete-group {
+        height: 32px;
+        padding: 0 12px;
+      }
       /* Smooth collapse animation */
       .config-group-body {
         max-height: 1000px;
