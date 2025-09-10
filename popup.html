@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <style>
+    :root { color-scheme: light dark; }
     body {
       width: 300px;
       padding: 16px;
@@ -55,6 +56,21 @@
       font-size: 14px;
       font-weight: 500;
       color: #24292e;
+    }
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      body { background: #0d1117; color: #c9d1d9; }
+      h1 { color: #c9d1d9; }
+      .status { background: #161b22; color: #c9d1d9; border: 1px solid #30363d; }
+      .config-selector { background: #161b22; border: 1px solid #30363d; }
+      .config-selector label { color: #c9d1d9; }
+      .config-selector select {
+        background: #0d1117;
+        color: #c9d1d9;
+        border: 1px solid #30363d;
+      }
+      .settings-link { color: #58a6ff; }
+      .settings-link:hover { color: #79c0ff; }
     }
   </style>
 </head>
