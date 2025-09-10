@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>Forgejo Mirror Settings</title>
     <style>
+      :root {
+        color-scheme: light dark;
+      }
       body {
         font-family: system-ui, -apple-system, sans-serif;
         margin: 0;
@@ -308,6 +311,81 @@
       }
       .rename-config:hover {
         background-color: #035fc7;
+      }
+
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: linear-gradient(180deg, #0d1117 0%, #0b0f14 100%);
+          color: #c9d1d9;
+        }
+        .container {
+          background: #0d1117;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        h1, h2, h3 { color: #c9d1d9; }
+
+        input {
+          background: #161b22;
+          color: #c9d1d9;
+          border: 1px solid #30363d;
+        }
+        input::placeholder { color: #8b949e; }
+        input:focus {
+          border-color: #58a6ff;
+          box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.3);
+        }
+
+        .helper-text { color: #8b949e; }
+
+        .checkbox-group {
+          background: #0d1117;
+          border-color: #30363d;
+        }
+        .checkbox-label {
+          color: #c9d1d9;
+        }
+        .checkbox-description { color: #8b949e; }
+
+        .config-group {
+          background: #0d1117;
+          border-color: #30363d;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .config-group:hover {
+          box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
+
+        .collapse-btn {
+          background-color: #161b22;
+          color: #c9d1d9;
+          border-color: #30363d;
+        }
+        .collapse-btn:hover {
+          background-color: #1f2630;
+        }
+        .switch-label-header {
+          background: #161b22;
+          border-color: #30363d;
+          color: #c9d1d9;
+        }
+
+        button {
+          border-color: #30363d;
+        }
+        button:hover {
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+        }
+        .test-connection {
+          /* keep blue, just ensure border contrast */
+          border-color: #30363d;
+        }
+        .delete-group {
+          /* keep red, but ensure readable */
+          border-color: #30363d;
+        }
+
+        .success-message { color: #3fb950; }
       }
     </style>
   </head>
