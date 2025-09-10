@@ -23,7 +23,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://github.com/*/*"],
+      "matches": ["https://github.com/*"],
       "js": ["content.js"],
       "css": ["styles.css"]
     }
@@ -31,5 +31,15 @@
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*.png"
+      ],
+      "matches": [
+        "https://github.com/*"
+      ]
+    }
+  ]
 }

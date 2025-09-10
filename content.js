@@ -150,10 +150,9 @@ class GitHubForgejoMirror {
     const btnContainer = document.createElement("li");
     const btn = document.createElement("button");
     btn.className = "forgejo-mirror-btn";
+    const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
     btn.innerHTML = `
-      <svg class="octicon" viewBox="0 0 16 16" width="16" height="16">
-        <path fill-rule="evenodd" d="M15 0a1 1 0 01.707 1.707L12.45 4.964a7.5 7.5 0 11-9.486 0L.707 1.707A1 1 0 012.12.293l2.787 2.787a6 6 0 119.186 0l2.787-2.787A1 1 0 0115 0z"/>
-      </svg>
+      <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
       Mirror to Forgejo
     `;
 
@@ -290,10 +289,9 @@ class GitHubForgejoMirror {
 
   resetButton(btn) {
     btn.disabled = false;
+    const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
     btn.innerHTML = `
-      <svg class="octicon" viewBox="0 0 16 16" width="16" height="16">
-        <path fill-rule="evenodd" d="M15 0a1 1 0 01.707 1.707L12.45 4.964a7.5 7.5 0 11-9.486 0L.707 1.707A1 1 0 012.12.293l2.787 2.787a6 6 0 119.186 0l2.787-2.787A1 1 0 0115 0z"/>
-      </svg>
+      <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
       Mirror to Forgejo
     `;
   }
