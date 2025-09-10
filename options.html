@@ -143,11 +143,51 @@
         align-items: center;
         margin-bottom: 20px;
       }
-      /* Unify header buttons height */
-      .config-group-header button {
-        min-height: 32px;
+      .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .header-controls > * {
+        height: 32px;
         display: inline-flex;
         align-items: center;
+        box-sizing: border-box;
+        font-size: 14px;
+        line-height: 32px;
+      }
+      .switch-label-header {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 12px;
+        background: #f6f8fa;
+        border: 1px solid #d1d5da;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #24292e;
+        height: 32px;
+        line-height: 32px;
+        margin: 0; /* remove default label bottom margin */
+      }
+      .config-group-header .is-active {
+        width: auto;
+        margin: 0;
+        height: 16px;
+      }
+      .switch-label-header input[type="checkbox"] {
+        margin: 0;
+        width: 16px;
+        height: 16px;
+        align-self: center;
+      }
+      /* Unify header buttons height */
+      .config-group-header button {
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0 12px;
+        line-height: 32px;
       }
       .config-group-header .collapse-btn {
         width: 32px;
@@ -287,16 +327,16 @@
             <input type="text" class="config-name-edit" style="width: 200px; font-size: 16px; font-weight: 600;" />
             <button type="button" class="rename-config" style="padding: 4px 8px;">✏️ Rename</button>
           </div>
-          <div>
+          <div class="header-controls">
+            <label class="switch-label-header" title="Set this configuration as active">
+              ⭐ Active
+              <input type="checkbox" class="switch is-active" />
+            </label>
             <button type="button" class="test-connection">🔌 Test Connection</button>
             <button type="button" class="delete-group">🗑️ Delete</button>
           </div>
         </div>
         <div class="config-group-body">
-          <div class="switch-container">
-            <label class="switch-label">⭐ Active:</label>
-            <input type="checkbox" class="switch is-active" />
-          </div>
           <form class="settings-form">
             <div class="form-group">
               <label for="forgejoUrl">Forgejo Server URL</label>
