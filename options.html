@@ -370,21 +370,50 @@
           color: #c9d1d9;
         }
 
+        /* Default (secondary) buttons in dark mode: neutral gray */
         button {
           border-color: #30363d;
+          background-color: #30363d;
+          color: #c9d1d9;
         }
         button:hover {
+          background-color: #484f58;
           box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
         }
-        .test-connection {
-          /* keep blue, just ensure border contrast */
-          border-color: #30363d;
+        button:disabled {
+          background-color: #484f58;
+          color: #8b949e;
         }
-        .delete-group {
-          /* keep red, but ensure readable */
-          border-color: #30363d;
+        /* Emphasis variants */
+        .settings-form button[type="submit"],
+        .add-group {
+          /* primary green */
+          background-color: #238636;
+          color: #ffffff;
+        }
+        .settings-form button[type="submit"]:hover,
+        .add-group:hover {
+          background-color: #2ea043;
         }
 
+        .test-connection {
+          /* blue button for dark */
+          border-color: #30363d;
+          background-color: #1f6feb;
+          color: #ffffff;
+        }
+        .delete-group {
+          /* red destructive in dark */
+          border-color: #30363d;
+          background-color: #da3633;
+          color: #ffffff;
+        }
+        .test-connection:hover { background-color: #388bfd; }
+        .delete-group:hover { background-color: #f85149; }
+        /* keep rename subtle in dark */
+        .rename-config { background-color: #30363d; color: #c9d1d9; }
+        .rename-config:hover { background-color: #484f58; }
+      
         .success-message { color: #3fb950; }
       }
     </style>
