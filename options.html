@@ -49,7 +49,7 @@
         box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
       }
       .helper-text {
-        margin-top: 4px;
+        margin-top: 0;
         color: #586069;
         font-size: 12px;
       }
@@ -100,15 +100,19 @@
         margin-bottom: 16px;
         cursor: pointer;
         display: flex;
-        align-items: baseline;
+        align-items: center; /* align checkbox and text vertically */
+        gap: 8px; /* use gap instead of input margin */
+        font-size: 14px;
+        line-height: 20px; /* ensure consistent text height */
       }
       .checkbox-label:last-child {
         margin-bottom: 0;
       }
       .checkbox-label input[type="checkbox"] {
         width: auto;
-        margin-right: 8px;
-        margin-top: 3px;
+        margin: 0; /* remove residual margins for consistent alignment */
+        vertical-align: middle;
+        align-self: center;
       }
       .checkbox-text {
         flex: 1;
@@ -121,7 +125,8 @@
         margin-top: 2px;
       }
       .checkbox-label .helper-text {
-        margin-left: 24px;
+        margin-left: 24px; /* indent helper text under the label text */
+        line-height: 18px;
       }
       .config-group {
         border: 1px solid #d1d5da;
