@@ -73,3 +73,9 @@
   from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+.forgejo-status-indicator {
+  font-size: 12px;
+  font-weight: normal;
+  vertical-align: middle;
+}

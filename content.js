@@ -69,6 +69,9 @@ class GitHubForgejoMirror {
     if (headerActions && !existingButton) {
       console.info("No existing button found, initializing...");
       await this.init();
+    } else if (existingButton) {
+      // If button already exists, update the repository status
+      setTimeout(() => this.checkRepositoryExists(), 500);
     } else {
       console.info("Button already exists, skipping initialization.");
     }
@@ -156,9 +159,79 @@ class GitHubForgejoMirror {
       Mirror to Forgejo
     `;
 
+    // Add status indicator
+    const statusIndicator = document.createElement("span");
+    statusIndicator.className = "forgejo-status-indicator";
+    statusIndicator.style.marginLeft = "8px";
+    statusIndicator.style.fontSize = "12px";
+    statusIndicator.style.fontWeight = "normal";
+    btnContainer.appendChild(statusIndicator);
+    
     btn.addEventListener("click", () => this.handleMirrorClick());
     btnContainer.appendChild(btn);
     headerActions.insertBefore(btnContainer, headerActions.firstChild);
+    
+    // Check if repository exists and update button status
+    this.checkRepositoryExists();
+  }
+
+  async checkRepositoryExists() {
+    // Prevent multiple concurrent checks
+    if (this._checkingRepository) return;
+    this._checkingRepository = true;
+    
+    const btn = document.querySelector(".forgejo-mirror-btn");
+    if (!btn) {
+      this._checkingRepository = false;
+      return;
+    }
+    
+    const statusIndicator = btn.parentElement.querySelector(".forgejo-status-indicator");
+    if (!statusIndicator) {
+      this._checkingRepository = false;
+      return;
+    }
+    
+    try {
+      const config = await this.getConfig();
+      if (!config) {
+        statusIndicator.textContent = "No config";
+        statusIndicator.style.color = "#d73a49";
+        this._checkingRepository = false;
+        return;
+      }
+      
+      const [owner, repo] = window.location.pathname.slice(1).split("/");
+      const repoOwner = config.useOrganization && owner !== config.forgejoUser ? owner : config.forgejoUser;
+      
+      // Check if repository exists on Forgejo
+      const response = await fetch(`${config.forgejoUrl}/api/v1/repos/${repoOwner}/${repo}`, {
+        headers: {
+          Authorization: `token ${config.forgejoToken}`
+        }
+      });
+      
+      if (response.ok) {
+        statusIndicator.textContent = "Already exists";
+        statusIndicator.style.color = "#2ea44f";
+        btn.disabled = true;
+      } else if (response.status === 404) {
+        statusIndicator.textContent = "Ready to mirror";
+        statusIndicator.style.color = "#0366d6";
+        btn.disabled = false;
+      } else {
+        statusIndicator.textContent = "Error checking";
+        statusIndicator.style.color = "#d73a49";
+        btn.disabled = false;
+      }
+    } catch (error) {
+      console.error("Error checking repository existence:", error);
+      statusIndicator.textContent = "Error checking";
+      statusIndicator.style.color = "#d73a49";
+      btn.disabled = false;
+    } finally {
+      this._checkingRepository = false;
+    }
   }
 
   async handleMirrorClick() {
@@ -188,6 +261,8 @@ class GitHubForgejoMirror {
 
       if (response.ok) {
         this.showNotification("success", "Repository mirrored successfully!");
+        // After successful mirror, check repository status again
+        setTimeout(() => this.checkRepositoryExists(), 1000);
       } else {
         const error = await response.json();
         throw new Error(error.message || "Failed to create mirror");
@@ -294,6 +369,16 @@ class GitHubForgejoMirror {
       <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
       Mirror to Forgejo
     `;
+    
+    // Preserve the status indicator
+    const statusIndicator = btn.parentElement.querySelector(".forgejo-status-indicator");
+    if (statusIndicator) {
+      statusIndicator.textContent = "Checking...";
+      statusIndicator.style.color = "#6a737d";
+    }
+    
+    // Re-check repository status after reset
+    setTimeout(() => this.checkRepositoryExists(), 500);
   }
 }
 
