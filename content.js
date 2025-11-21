@@ -69,9 +69,6 @@ class GitHubForgejoMirror {
     if (headerActions && !existingButton) {
       console.info("No existing button found, initializing...");
       await this.init();
-    } else if (existingButton) {
-      // If button already exists, update the repository status
-      setTimeout(() => this.checkRepositoryExists(), 500);
     } else {
       console.info("Button already exists, skipping initialization.");
     }
@@ -376,9 +373,6 @@ class GitHubForgejoMirror {
       statusIndicator.textContent = "Checking...";
       statusIndicator.style.color = "#6a737d";
     }
-    
-    // Re-check repository status after reset
-    setTimeout(() => this.checkRepositoryExists(), 500);
   }
 }
 
