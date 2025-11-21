@@ -159,9 +159,8 @@ class GitHubForgejoMirror {
     // Add status indicator
     const statusIndicator = document.createElement("span");
     statusIndicator.className = "forgejo-status-indicator";
-    statusIndicator.style.marginLeft = "8px";
-    statusIndicator.style.fontSize = "12px";
-    statusIndicator.style.fontWeight = "normal";
+    statusIndicator.textContent = "🔄 Checking...";
+    statusIndicator.style.color = "#6a737d";
     btnContainer.appendChild(statusIndicator);
     
     btn.addEventListener("click", () => this.handleMirrorClick());
@@ -192,7 +191,7 @@ class GitHubForgejoMirror {
     try {
       const config = await this.getConfig();
       if (!config) {
-        statusIndicator.textContent = "No config";
+        statusIndicator.textContent = "⚙ No config";
         statusIndicator.style.color = "#d73a49";
         this._checkingRepository = false;
         return;
@@ -209,22 +208,28 @@ class GitHubForgejoMirror {
       });
       
       if (response.ok) {
-        statusIndicator.textContent = "Already exists";
+        // Repository already exists - hide the button
+        btn.style.display = "none";
+        statusIndicator.textContent = "✓ Already mirrored";
         statusIndicator.style.color = "#2ea44f";
-        btn.disabled = true;
       } else if (response.status === 404) {
-        statusIndicator.textContent = "Ready to mirror";
+        // Repository doesn't exist - show button and ready status
+        btn.style.display = "inline-flex";
+        statusIndicator.textContent = "✨ Ready to mirror";
         statusIndicator.style.color = "#0366d6";
         btn.disabled = false;
       } else {
-        statusIndicator.textContent = "Error checking";
+        // Error checking - show button but with error status
+        btn.style.display = "inline-flex";
+        statusIndicator.textContent = "⚠ Error checking";
         statusIndicator.style.color = "#d73a49";
         btn.disabled = false;
       }
     } catch (error) {
       console.error("Error checking repository existence:", error);
-      statusIndicator.textContent = "Error checking";
+      statusIndicator.textContent = "⚠ Error checking";
       statusIndicator.style.color = "#d73a49";
+      btn.style.display = "inline-flex";
       btn.disabled = false;
     } finally {
       this._checkingRepository = false;
@@ -370,7 +375,7 @@ class GitHubForgejoMirror {
     // Preserve the status indicator
     const statusIndicator = btn.parentElement.querySelector(".forgejo-status-indicator");
     if (statusIndicator) {
-      statusIndicator.textContent = "Checking...";
+      statusIndicator.textContent = "🔄 Checking...";
       statusIndicator.style.color = "#6a737d";
     }
   }
