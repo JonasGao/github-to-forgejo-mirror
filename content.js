@@ -156,15 +156,15 @@ class GitHubForgejoMirror {
       Mirror to Forgejo
     `;
 
-    // Add status indicator
+    btn.addEventListener("click", () => this.handleMirrorClick());
+    btnContainer.appendChild(btn);
+    
+    // Add status indicator after button
     const statusIndicator = document.createElement("span");
     statusIndicator.className = "forgejo-status-indicator";
     statusIndicator.textContent = "🔄 Checking...";
     statusIndicator.style.color = "#6a737d";
     btnContainer.appendChild(statusIndicator);
-    
-    btn.addEventListener("click", () => this.handleMirrorClick());
-    btnContainer.appendChild(btn);
     headerActions.insertBefore(btnContainer, headerActions.firstChild);
     
     // Check if repository exists and update button status
