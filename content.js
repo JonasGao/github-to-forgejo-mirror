@@ -159,13 +159,16 @@ class GitHubForgejoMirror {
     btn.addEventListener("click", () => this.handleMirrorClick());
     btnContainer.appendChild(btn);
     
-    // Add status indicator after button
+    // Add status indicator in its own li container
+    const statusContainer = document.createElement("li");
     const statusIndicator = document.createElement("span");
     statusIndicator.className = "forgejo-status-indicator";
     statusIndicator.textContent = "🔄 Checking...";
     statusIndicator.style.color = "#6a737d";
-    btnContainer.appendChild(statusIndicator);
-    headerActions.insertBefore(btnContainer, headerActions.firstChild);
+    statusContainer.appendChild(statusIndicator);
+    
+    headerActions.insertBefore(statusContainer, headerActions.firstChild);
+    headerActions.insertBefore(btnContainer, statusContainer);
     
     // Check if repository exists and update button status
     this.checkRepositoryExists();
@@ -182,7 +185,7 @@ class GitHubForgejoMirror {
       return;
     }
     
-    const statusIndicator = btn.parentElement.querySelector(".forgejo-status-indicator");
+    const statusIndicator = document.querySelector(".forgejo-status-indicator");
     if (!statusIndicator) {
       this._checkingRepository = false;
       return;
@@ -373,7 +376,7 @@ class GitHubForgejoMirror {
     `;
     
     // Preserve the status indicator
-    const statusIndicator = btn.parentElement.querySelector(".forgejo-status-indicator");
+    const statusIndicator = document.querySelector(".forgejo-status-indicator");
     if (statusIndicator) {
       statusIndicator.textContent = "🔄 Checking...";
       statusIndicator.style.color = "#6a737d";
