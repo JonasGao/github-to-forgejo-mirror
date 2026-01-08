@@ -111,6 +111,15 @@ class GitHubForgejoMirror {
     return repoPatterns.some((pattern) => pattern.test(pathname));
   }
 
+  getButtonHTML(statusText = "🔄 Checking...", showSpinner = false) {
+    const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
+    const spinnerHTML = showSpinner ? '<span class="spinner"></span> ' : '';
+    return `
+      <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
+      ${spinnerHTML}<span class="forgejo-status-indicator">${statusText}</span>
+    `;
+  }
+
   async getConfig() {
     return new Promise((resolve) => {
       chrome.storage.sync.get(["configurations", "activeConfig"], (data) => {
@@ -150,11 +159,7 @@ class GitHubForgejoMirror {
     const btnContainer = document.createElement("li");
     const btn = document.createElement("button");
     btn.className = "forgejo-mirror-btn";
-    const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
-    btn.innerHTML = `
-      <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
-      <span class="forgejo-status-indicator">🔄 Checking...</span>
-    `;
+    btn.innerHTML = this.getButtonHTML();
 
     btn.addEventListener("click", () => this.handleMirrorClick());
     btnContainer.appendChild(btn);
@@ -234,13 +239,9 @@ class GitHubForgejoMirror {
 
     try {
       btn.disabled = true;
-      const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
-      btn.innerHTML = `
-        <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
-        <span class="spinner"></span> <span class="forgejo-status-indicator">Creating mirror...</span>
-      `;
+      btn.innerHTML = this.getButtonHTML("Creating mirror...", true);
 
-      // 获取最新配置
+      // Get the latest configuration
       const config = await this.getConfig();
       if (!config) {
         throw new Error(
@@ -362,11 +363,7 @@ class GitHubForgejoMirror {
 
   resetButton(btn) {
     btn.disabled = false;
-    const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
-    btn.innerHTML = `
-      <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
-      <span class="forgejo-status-indicator">🔄 Checking...</span>
-    `;
+    btn.innerHTML = this.getButtonHTML();
   }
 }
 
