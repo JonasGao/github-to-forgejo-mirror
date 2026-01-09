@@ -58,7 +58,7 @@ class GitHubForgejoMirror {
     }
 
     const headerActions = document.querySelector("ul.pagehead-actions");
-    const existingButton = document.querySelector(".btn.btn-sm.forgejo-mirror");
+    const existingButton = document.querySelector(".forgejo-mirror");
 
     console.debug("Checking button status...", {
       headerActions,
@@ -175,7 +175,7 @@ class GitHubForgejoMirror {
     if (this._checkingRepository) return;
     this._checkingRepository = true;
     
-    const btn = document.querySelector(".btn.btn-sm.forgejo-mirror");
+    const btn = document.querySelector(".forgejo-mirror");
     if (!btn) {
       this._checkingRepository = false;
       return;
@@ -229,7 +229,7 @@ class GitHubForgejoMirror {
   }
 
   async handleMirrorClick() {
-    const btn = document.querySelector(".btn.btn-sm.forgejo-mirror");
+    const btn = document.querySelector(".forgejo-mirror");
     if (!btn) return;
 
     try {
