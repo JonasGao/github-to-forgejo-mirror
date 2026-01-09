@@ -116,7 +116,7 @@ class GitHubForgejoMirror {
     const spinnerHTML = showSpinner ? '<span class="spinner"></span> ' : '';
     return `
       <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom;" />
-      ${spinnerHTML}<span>${statusText}</span>
+      ${spinnerHTML}<span class="forgejo-status-text">${statusText}</span>
     `;
   }
 
@@ -181,7 +181,7 @@ class GitHubForgejoMirror {
       return;
     }
     
-    const statusIndicator = btn.querySelector("span:not(.spinner)");
+    const statusIndicator = btn.querySelector(".forgejo-status-text");
     if (!statusIndicator) {
       this._checkingRepository = false;
       return;
