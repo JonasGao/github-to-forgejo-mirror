@@ -111,6 +111,15 @@ class GitHubForgejoMirror {
     return repoPatterns.some((pattern) => pattern.test(pathname));
   }
 
+  getButtonHTML(statusText = "🔄 Checking...", showSpinner = false) {
+    const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
+    const spinnerHTML = showSpinner ? '<span class="spinner"></span> ' : '';
+    return `
+      <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
+      ${spinnerHTML}<span class="forgejo-status-indicator">${statusText}</span>
+    `;
+  }
+
   async getConfig() {
     return new Promise((resolve) => {
       chrome.storage.sync.get(["configurations", "activeConfig"], (data) => {
@@ -150,25 +159,12 @@ class GitHubForgejoMirror {
     const btnContainer = document.createElement("li");
     const btn = document.createElement("button");
     btn.className = "forgejo-mirror-btn";
-    const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
-    btn.innerHTML = `
-      <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
-      Mirror to Forgejo
-    `;
+    btn.innerHTML = this.getButtonHTML();
 
     btn.addEventListener("click", () => this.handleMirrorClick());
     btnContainer.appendChild(btn);
     
-    // Add status indicator in its own li container
-    const statusContainer = document.createElement("li");
-    const statusIndicator = document.createElement("span");
-    statusIndicator.className = "forgejo-status-indicator";
-    statusIndicator.textContent = "🔄 Checking...";
-    statusIndicator.style.color = "#6a737d";
-    statusContainer.appendChild(statusIndicator);
-    
-    headerActions.insertBefore(statusContainer, headerActions.firstChild);
-    headerActions.insertBefore(btnContainer, statusContainer);
+    headerActions.insertBefore(btnContainer, headerActions.firstChild);
     
     // Check if repository exists and update button status
     this.checkRepositoryExists();
@@ -185,7 +181,7 @@ class GitHubForgejoMirror {
       return;
     }
     
-    const statusIndicator = document.querySelector(".forgejo-status-indicator");
+    const statusIndicator = btn.querySelector(".forgejo-status-indicator");
     if (!statusIndicator) {
       this._checkingRepository = false;
       return;
@@ -196,6 +192,7 @@ class GitHubForgejoMirror {
       if (!config) {
         statusIndicator.textContent = "⚙ No config";
         statusIndicator.style.color = "#d73a49";
+        btn.disabled = true;
         this._checkingRepository = false;
         return;
       }
@@ -211,19 +208,17 @@ class GitHubForgejoMirror {
       });
       
       if (response.ok) {
-        // Repository already exists - hide the button
-        btn.style.display = "none";
+        // Repository already exists - disable the button
         statusIndicator.textContent = "✓ Already mirrored";
         statusIndicator.style.color = "#2ea44f";
+        btn.disabled = true;
       } else if (response.status === 404) {
-        // Repository doesn't exist - show button and ready status
-        btn.style.display = "inline-flex";
+        // Repository doesn't exist - enable button and ready status
         statusIndicator.textContent = "✨ Ready to mirror";
         statusIndicator.style.color = "#0366d6";
         btn.disabled = false;
       } else {
         // Error checking - show button but with error status
-        btn.style.display = "inline-flex";
         statusIndicator.textContent = "⚠ Error checking";
         statusIndicator.style.color = "#d73a49";
         btn.disabled = false;
@@ -232,7 +227,6 @@ class GitHubForgejoMirror {
       console.error("Error checking repository existence:", error);
       statusIndicator.textContent = "⚠ Error checking";
       statusIndicator.style.color = "#d73a49";
-      btn.style.display = "inline-flex";
       btn.disabled = false;
     } finally {
       this._checkingRepository = false;
@@ -245,9 +239,9 @@ class GitHubForgejoMirror {
 
     try {
       btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Creating mirror...';
+      btn.innerHTML = this.getButtonHTML("Creating mirror...", true);
 
-      // 获取最新配置
+      // Get the latest configuration
       const config = await this.getConfig();
       if (!config) {
         throw new Error(
@@ -369,18 +363,7 @@ class GitHubForgejoMirror {
 
   resetButton(btn) {
     btn.disabled = false;
-    const iconUrl = chrome.runtime.getURL("icons/forgejo.png");
-    btn.innerHTML = `
-      <img class="forgejo-icon" src="${iconUrl}" width="16" height="16" alt="Forgejo" style="vertical-align: text-bottom; margin-right: 4px;" />
-      Mirror to Forgejo
-    `;
-    
-    // Preserve the status indicator
-    const statusIndicator = document.querySelector(".forgejo-status-indicator");
-    if (statusIndicator) {
-      statusIndicator.textContent = "🔄 Checking...";
-      statusIndicator.style.color = "#6a737d";
-    }
+    btn.innerHTML = this.getButtonHTML();
   }
 }
 
