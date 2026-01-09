@@ -106,9 +106,10 @@ This is a pure frontend browser extension with no build process or external depe
 isRepoPage() {
   const pathname = window.location.pathname;
   const repoPatterns = [
-    /^\/[^/]+\/[^/]+\/?$/,
-    /^\/[^/]+\/[^/]+\/tree\/[^/]+/,
-    // etc.
+    /^\/[^/]+\/[^/]+\/?$/,        // Repository homepage
+    /^\/[^/]+\/[^/]+\/tree\/[^/]+/,  // Branch browsing
+    /^\/[^/]+\/[^/]+\/blob\/[^/]+/,  // File viewing
+    /^\/[^/]+\/[^/]+\/commits\/[^/]+/ // Commit history
   ];
   return repoPatterns.some(pattern => pattern.test(pathname));
 }
