@@ -1,93 +1,243 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
     body {
       width: 300px;
-      padding: 16px;
-      font-family: -apple-system, sans-serif;
-    }
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .logo {
-      width: 24px;
-      height: 24px;
-      margin-right: 8px;
-    }
-    h1 {
       margin: 0;
-      font-size: 16px;
-      color: #24292e;
+      font-family: -apple-system, "Segoe UI", "Noto Sans SC", Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      background: #fff;
+      color: #1f2328;
+    }
+
+    /* ---- 头部（渐变） ---- */
+    .top {
+      background: linear-gradient(135deg, #0b3d2e, #14684a);
+      color: #fff;
+      padding: 14px 14px 16px;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 700;
+    }
+    .brand img { width: 22px; height: 22px; border-radius: 5px; }
+    .brand span { flex: 1; }
+    .path {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 13px; font-weight: 600;
+      margin-top: 10px;
+      word-break: break-all;
     }
     .status {
-      padding: 12px;
+      display: flex; align-items: center; gap: 6px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #cfe8dc;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      display: inline-block; flex: none;
+    }
+    .dot.green { background: #2da44e; }
+    .dot.blue  { background: #0969da; }
+    .dot.amber { background: #d4a72c; }
+    .dot.red   { background: #cf222e; }
+    .dot.gray  { background: #57606a; }
+
+    /* ---- 主体 ---- */
+    .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+    .action {
+      width: 100%; padding: 12px;
+      border: none; border-radius: 8px;
+      background: #1f6feb; color: #fff;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(31,111,235,.28);
+      font-family: inherit;
+    }
+    .action:hover:not(:disabled) { background: #1a5fd0; }
+    .action:disabled {
+      background: #b6c8e6;
+      box-shadow: none;
+      cursor: default;
+    }
+    .action:disabled.readonly { background: #94d3a2; }
+
+    .view {
+      text-align: center; font-size: 12.5px;
+    }
+    .view a { color: #1f6feb; text-decoration: none; font-weight: 600; }
+    .view a:hover { text-decoration: underline; }
+
+    .empty {
+      text-align: center;
+      color: #57606a;
+      font-size: 12.5px;
+      padding: 4px 0;
+    }
+    .empty-icon { font-size: 20px; margin-bottom: 4px; }
+
+    /* ---- 折叠高级选项 ---- */
+    details.opts {
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      padding: 9px 11px;
+    }
+    details.opts summary {
+      cursor: pointer;
+      font-size: 12.5px; font-weight: 600; color: #24292f;
+      list-style: none;
+      display: flex; align-items: center; gap: 6px;
+    }
+    details.opts summary::-webkit-details-marker { display: none; }
+    details.opts summary::before {
+      content: "▸"; color: #656d76; font-size: 11px;
+      transition: transform .15s;
+    }
+    details.opts[open] summary::before { transform: rotate(90deg); }
+    .opts-list {
+      list-style: none; margin: 8px 0 0; padding: 0;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      font-size: 12.5px; color: #424a53;
+    }
+    .opts-list li { display: flex; align-items: center; gap: 6px; }
+    .opts-list input[type="checkbox"] { accent-color: #1f6feb; margin: 0; }
+    .opts-list .interval {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: #57606a;
+    }
+    .opts-list select {
+      border: 1px solid #d8dee4; border-radius: 5px;
+      font-size: 12px; padding: 2px 4px;
+      background: #fff; color: #1f2328;
+      font-family: inherit;
+    }
+
+    /* ---- 页脚 ---- */
+    .footer {
+      display: flex; align-items: center; gap: 6px;
+      border-top: 1px solid #eaeef2;
+      padding-top: 10px;
+      font-size: 12px; color: #57606a;
+    }
+    .footer select {
+      border: 1px solid #d8dee4; border-radius: 5px;
+      font-size: 12px; padding: 2px 5px;
+      background: #fff; color: #1f2328;
+      font-family: inherit;
+      max-width: 130px;
+    }
+    .footer .conn { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .footer a { color: #1f6feb; text-decoration: none; font-weight: 500; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ---- 结果提示 ---- */
+    .toast {
+      font-size: 12.5px;
+      padding: 8px 10px;
       border-radius: 6px;
-      background: #f6f8fa;
-      margin-bottom: 16px;
+      text-align: center;
     }
-    .settings-link {
-      color: #0366d6;
-      text-decoration: none;
-      font-size: 14px;
+    .toast.success { background: #e6f4ea; color: #1a7f37; }
+    .toast.error   { background: #ffebe9; color: #cf222e; }
+
+    /* ---- 加载状态 ---- */
+    .action .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+      margin-right: 6px;
+      vertical-align: -2px;
     }
-    .settings-link:hover {
-      text-decoration: underline;
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
-    .config-selector {
-      margin-bottom: 16px;
-      padding: 12px;
-      border-radius: 6px;
-      background: #f6f8fa;
-    }
-    .config-selector select {
-      width: 100%;
-      padding: 6px;
-      border-radius: 4px;
-      border: 1px solid #d1d5da;
-      font-size: 14px;
-      font-family: inherit; /* match body font */
-      margin-top: 8px;
-    }
-    .config-selector label {
-      font-size: 14px;
-      font-weight: 500;
-      color: #24292e;
-    }
-    /* Dark mode */
+
+    /* ---- 深色模式 ---- */
     @media (prefers-color-scheme: dark) {
-      body { background: #0d1117; color: #c9d1d9; }
-      h1 { color: #c9d1d9; }
-      .status { background: #161b22; color: #c9d1d9; border: 1px solid #30363d; }
-      .config-selector { background: #161b22; border: 1px solid #30363d; }
-      .config-selector label { color: #c9d1d9; }
-      .config-selector select {
-        background: #0d1117;
-        color: #c9d1d9;
-        border: 1px solid #30363d;
+      body { background: #0d1117; color: #e6edf3; }
+      details.opts { border-color: #30363d; background: #161b22; }
+      details.opts summary { color: #e6edf3; }
+      .opts-list { color: #c9d1d9; }
+      .opts-list .interval { color: #8b949e; }
+      .opts-list select, .footer select {
+        background: #21262d; color: #e6edf3; border-color: #30363d;
       }
-      .settings-link { color: #58a6ff; }
-      .settings-link:hover { color: #79c0ff; }
+      .footer { border-top-color: #21262d; color: #8b949e; }
+      .footer a { color: #58a6ff; }
+      .view a { color: #58a6ff; }
+      .toast.success { background: rgba(46,160,67,.15); color: #7ee787; }
+      .toast.error { background: rgba(248,81,73,.15); color: #ffa198; }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <img src="icons/icon48.png" alt="Logo" class="logo">
-    <h1>GitHub to Forgejo Mirror</h1>
+  <div class="top">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="">
+      <span>镜像到 Forgejo</span>
+    </div>
+    <div class="path" id="repo-path">加载中...</div>
+    <div class="status">
+      <span class="dot gray" id="status-dot"></span>
+      <span id="status-text">正在检查...</span>
+    </div>
   </div>
-  <div class="config-selector">
-    <label for="config-select">Active Configuration:</label>
-    <select id="config-select"></select>
+
+  <div class="body">
+    <div class="toast" id="toast" style="display:none"></div>
+
+    <button class="action" id="action-btn">镜像到 Forgejo</button>
+
+    <div class="view" id="view-link" style="display:none">
+      <a href="#" id="forgejo-link" target="_blank">已在 Forgejo → 查看</a>
+    </div>
+
+    <div class="empty" id="empty-msg" style="display:none">
+      <div class="empty-icon">🗂️</div>
+      <div>打开一个 GitHub 仓库页后再来镜像</div>
+    </div>
+
+    <details class="opts" id="opts">
+      <summary>高级选项</summary>
+      <ul class="opts-list">
+        <li><input type="checkbox" id="opt-mirror" checked><label for="opt-mirror">镜像同步</label></li>
+        <li><input type="checkbox" id="opt-wiki" checked><label for="opt-wiki">Wiki</label></li>
+        <li><input type="checkbox" id="opt-labels" checked><label for="opt-labels">Labels</label></li>
+        <li><input type="checkbox" id="opt-issues"><label for="opt-issues">Issues</label></li>
+        <li><input type="checkbox" id="opt-pr"><label for="opt-pr">Pull Requests</label></li>
+        <li><input type="checkbox" id="opt-releases"><label for="opt-releases">Releases</label></li>
+        <li><input type="checkbox" id="opt-private" checked><label for="opt-private">Private</label></li>
+        <li><input type="checkbox" id="opt-org" checked><label for="opt-org">组织结构</label></li>
+        <li class="interval">间隔
+          <select id="opt-interval">
+            <option value="8">8h</option>
+            <option value="24">24h</option>
+            <option value="48">48h</option>
+            <option value="72">72h</option>
+          </select>
+        </li>
+      </ul>
+    </details>
+
+    <div class="footer">
+      <select id="config-select"></select>
+      <span class="conn" id="connection">检查连接...</span>
+      <a href="#" id="settings-link">⚙</a>
+    </div>
   </div>
-  <div class="status" id="status">
-    Checking connection...
-  </div>
-  <a href="#" id="settings-link" class="settings-link">Open Settings</a>
+
   <script src="popup.js"></script>
 </body>
 </html>
